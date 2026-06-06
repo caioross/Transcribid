@@ -1,0 +1,232 @@
+<Window x:Class="AudioRecorder.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Transcribid"
+        Height="680" Width="460"
+        MinHeight="540" MinWidth="400"
+        Background="{StaticResource BgBrush}"
+        FontFamily="Segoe UI"
+        TextOptions.TextFormattingMode="Display"
+        WindowStartupLocation="CenterScreen">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Padding="20,16,12,14"
+                BorderThickness="0,0,0,1"
+                BorderBrush="{StaticResource DividerBrush}">
+            <DockPanel>
+                <Ellipse x:Name="StatusDot"
+                         Width="8" Height="8"
+                         Fill="{StaticResource AccentRed}"
+                         Margin="0,0,10,0"
+                         VerticalAlignment="Center"/>
+                <TextBlock Text="Transcribid"
+                           Foreground="{StaticResource TextPrimary}"
+                           FontSize="14" FontWeight="SemiBold"
+                           VerticalAlignment="Center"/>
+                <TextBlock x:Name="HeaderHint"
+                           Text="pronto"
+                           Foreground="{StaticResource TextMuted}"
+                           FontSize="11"
+                           VerticalAlignment="Center"
+                           Margin="10,1,0,0"/>
+
+                <Button x:Name="SettingsBtn"
+                        DockPanel.Dock="Right"
+                        Content="⚙"
+                        ToolTip="Configurações (settings.json)"
+                        Style="{StaticResource IconButton}"
+                        Click="Settings_Click"/>
+                <Button x:Name="OpenFolderBtn"
+                        DockPanel.Dock="Right"
+                        Content="📁"
+                        ToolTip="Abrir pasta de gravações"
+                        Style="{StaticResource IconButton}"
+                        Click="OpenFolder_Click"/>
+                <Button x:Name="RefreshBtn"
+                        DockPanel.Dock="Right"
+                        Content="↻"
+                        ToolTip="Atualizar lista"
+                        Style="{StaticResource IconButton}"
+                        Click="Refresh_Click"/>
+            </DockPanel>
+        </Border>
+
+        <!-- Recording panel -->
+        <StackPanel Grid.Row="1" Margin="20,28,20,18">
+            <TextBlock x:Name="TimerText"
+                       Text="00:00:00"
+                       FontFamily="Consolas, Cascadia Mono, Menlo"
+                       FontSize="46" FontWeight="Light"
+                       Foreground="{StaticResource TextPrimary}"
+                       HorizontalAlignment="Center"/>
+
+            <Button x:Name="RecordButton"
+                    Content="● Iniciar gravação"
+                    Style="{StaticResource RecordButtonStyle}"
+                    Margin="0,18,0,18"
+                    HorizontalAlignment="Center"
+                    Click="Record_Click"/>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="32"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="6"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0"
+                           Text="MIC"
+                           Foreground="{StaticResource TextMuted}"
+                           FontSize="10" FontWeight="SemiBold"
+                           VerticalAlignment="Center"
+                           Margin="0,0,0,4"/>
+                <Border Grid.Row="0" Grid.Column="1"
+                        Background="{StaticResource MeterTrackBrush}"
+                        Height="6" CornerRadius="3"
+                        Margin="0,0,0,4">
+                    <Border x:Name="MicLevelBar"
+                            Background="{StaticResource AccentGreen}"
+                            CornerRadius="3"
+                            HorizontalAlignment="Left"
+                            Width="0"/>
+                </Border>
+
+                <TextBlock Grid.Row="2" Grid.Column="0"
+                           Text="SYS"
+                           Foreground="{StaticResource TextMuted}"
+                           FontSize="10" FontWeight="SemiBold"
+                           VerticalAlignment="Center"/>
+                <Border Grid.Row="2" Grid.Column="1"
+                        Background="{StaticResource MeterTrackBrush}"
+                        Height="6" CornerRadius="3">
+                    <Border x:Name="SysLevelBar"
+                            Background="{StaticResource AccentBlue}"
+                            CornerRadius="3"
+                            HorizontalAlignment="Left"
+                            Width="0"/>
+                </Border>
+            </Grid>
+        </StackPanel>
+
+        <!-- Recordings list -->
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0"
+                    BorderThickness="0,1,0,1"
+                    BorderBrush="{StaticResource DividerBrush}"
+                    Padding="20,9,20,9">
+                <DockPanel>
+                    <TextBlock Text="GRAVAÇÕES"
+                               Foreground="{StaticResource TextSecondary}"
+                               FontSize="10" FontWeight="SemiBold"/>
+                    <TextBlock x:Name="RecordingsCountText"
+                               Text=""
+                               Foreground="{StaticResource TextMuted}"
+                               FontSize="10"
+                               Margin="8,0,0,0"
+                               VerticalAlignment="Center"/>
+                </DockPanel>
+            </Border>
+
+            <ScrollViewer Grid.Row="1"
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled"
+                          Padding="0,8,0,12">
+                <ItemsControl x:Name="RecordingsList">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="{StaticResource PanelBrush}"
+                                    CornerRadius="9"
+                                    Margin="14,4,14,4"
+                                    Padding="14,10,8,10">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding DisplayDate}"
+                                                   Foreground="{StaticResource TextPrimary}"
+                                                   FontSize="13"
+                                                   FontWeight="Medium"/>
+                                        <TextBlock Foreground="{StaticResource TextMuted}"
+                                                   FontSize="11"
+                                                   Margin="0,2,0,0">
+                                            <Run Text="{Binding DurationText, Mode=OneWay}"/>
+                                            <Run Text="  ·  "/>
+                                            <Run Text="{Binding SizeText, Mode=OneWay}"/>
+                                            <Run Text="  "/>
+                                            <Run Text="{Binding TranscriptionProgressText, Mode=OneWay}"
+                                                 Foreground="{StaticResource AccentBlue}"/>
+                                        </TextBlock>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal"
+                                                VerticalAlignment="Center">
+                                        <Button Content="▶"
+                                                ToolTip="Reproduzir"
+                                                Tag="{Binding}"
+                                                Click="Play_Click"
+                                                Style="{StaticResource ItemActionButton}"/>
+                                        <Button Content="{Binding TranscriptionIcon, Mode=OneWay}"
+                                                ToolTip="{Binding TranscriptionTooltip, Mode=OneWay}"
+                                                Tag="{Binding}"
+                                                Click="Transcribe_Click"
+                                                Style="{StaticResource ItemActionButton}"/>
+                                        <Button Content="📁"
+                                                ToolTip="Mostrar na pasta"
+                                                Tag="{Binding}"
+                                                Click="Reveal_Click"
+                                                Style="{StaticResource ItemActionButton}"/>
+                                        <Button Content="🗑"
+                                                ToolTip="Excluir"
+                                                Tag="{Binding}"
+                                                Click="Delete_Click"
+                                                Style="{StaticResource ItemActionButton}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <TextBlock x:Name="EmptyHint"
+                       Grid.Row="1"
+                       Text="Nenhuma gravação ainda."
+                       Foreground="{StaticResource TextMuted}"
+                       FontSize="12"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Visibility="Collapsed"/>
+        </Grid>
+
+        <!-- Footer -->
+        <Border Grid.Row="3"
+                BorderThickness="0,1,0,0"
+                BorderBrush="{StaticResource DividerBrush}"
+                Padding="20,8,20,8">
+            <TextBlock x:Name="FooterText"
+                       Text=""
+                       Foreground="{StaticResource TextMuted}"
+                       FontSize="11"/>
+        </Border>
+    </Grid>
+</Window>

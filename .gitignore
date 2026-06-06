@@ -1,0 +1,31 @@
+# ───────────────────────── .NET / C# (WPF) ─────────────────────────
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+publish/
+*.user
+*.suo
+*.cache
+*.dll.config
+.vs/
+
+# ───────────────────────── Modelos Whisper (GGML, pesados) ──────────
+# Baixados sob demanda em %LOCALAPPDATA%\Transcribid\models — nunca versionar
+*.gguf
+*.bin
+*.pt
+*.onnx
+*.safetensors
+
+# ───────────────────────── Mídia gravada (pesada) ──────────────────
+*.mp3
+*.wav
+*.mp4
+*.srt
+*.part
+
+# ───────────────────────── Outros ──────────────────────────────────
+*.zip
+*.log
+settings.json
