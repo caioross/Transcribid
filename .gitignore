@@ -29,3 +29,9 @@ publish/
 *.zip
 *.log
 settings.json
+
+# Ferramentas internas
+.claude/
+
+# Site de apresentacao = repositorio separado
+/site/
